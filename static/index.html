@@ -395,6 +395,18 @@
     </script>
   </amp-state>
 
+  <amp-state id="autosuggest">
+    <script type="application/json">
+      {
+      "endpoint": "/autosuggest/search_list?q=",
+      "emptyAndInitialTemplateJson": [{
+        "query": "",
+        "results": []
+      }]
+      }
+    </script>
+  </amp-state>
+
   <!-- Animations for fixed ad -->
   <amp-animation id="shrinkAnim" layout="nodisplay">
     <script type="application/json">
@@ -484,9 +496,42 @@
     </div>
     <div id="header-title" class="mdl-color--black mdl-color-text--white hdr-menu">
       <amp-img class="menu" src="./img/ic_menu_white_24dp_1x.png" width=24 height=24></amp-img>
-      <span class="mdl-color-text--blue">AMP</span>PAREL
-      <amp-img class="search" src="./img/ic_search_white_24dp_1x.png" width=24 height=24></amp-img>
-    </div>
+      <div class="site-name">
+        <span class="mdl-color-text--blue">AMP</span>PAREL</div>
+
+      <!-- Auto search form -->
+      <form method="post" action-xhr="" target="_blank" id="search-form" on="submit: autosuggest-list.hide; submit-success:autosuggest-list.hide,
+          AMP.setState({
+           products: {
+            searchProduct: event.response.name
+            }
+          });
+          submit-error: autosuggest-list.hide">
+        <input name="product" type="text" class="autosuggest-input" on="input-debounced: AMP.setState({
+           query: event.value, showDropdown: event.value,
+          }), autosuggest-list.show;
+          Tap: AMP.setState({
+           query: query == null ? '' : query, showDropdown: 'true',
+          }), autosuggest-list.show" [value]="query || ''" value="" required autocomplete="off" />
+        <div class="suggest">
+          <div class="autosuggest-container hidden" [class]="(showDropdown && query) ?
+          'autosuggest-container' :
+          'autosuggest-container hidden'">
+            <amp-list class="autosuggest-box" layout="fixed-height" height="120" items="." src="/autosuggest/search_product" [src]="query ? autosuggest.endpoint + query : autosuggest.emptyAndInitialTemplateJson"
+              id="autosuggest-list">
+              <template type="amp-mustache">
+                <amp-selector id="autosuggest-selector" keyboard-select-mode="focus" layout="container" on="select: AMP.setState({query: event.targetOption,
+              showDropdown: false,searchProduct: event.targetOption}),autosuggest-list.hide">
+                  <div class="select-option no-outline" role="option" tabindex="0" on="tap:autosuggest-list.hide" option="{{name}}">{{name}}
+                  </div>
+                </amp-selector>
+              </template>
+            </amp-list>
+          </div>
+        </div>
+      </form>
+      <input class="search" type="submit" value="">
+      </div>
   </header>
   <div class="hdr-menu"></div>
 
