@@ -14,7 +14,24 @@
   <script async custom-element="amp-form" src="https://cdn.ampproject.org/v0/amp-form-0.1.js"></script>
   <script async custom-element="amp-selector" src="https://cdn.ampproject.org/v0/amp-selector-0.1.js"></script>
   <script async custom-template="amp-mustache" src="https://cdn.ampproject.org/v0/amp-mustache-0.1.js"></script>
-  <script async custom-template="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
+  <script async custom-element="amp-list" src="https://cdn.ampproject.org/v0/amp-list-0.1.js"></script>
+  <script async custom-element="amp-access" src="https://cdn.ampproject.org/v0/amp-access-0.1.js"></script>
+  <script async custom-element="amp-analytics" src="https://cdn.ampproject.org/v0/amp-analytics-0.1.js"></script>
+  
+  <script id="amp-access" type="application/json">
+    {
+      "authorization": "/authorization?rid=READER_ID&url=CANONICAL_URL&ref=DOCUMENT_REFERRER&_=RANDOM",
+      "noPingback": "true",
+      "login": {
+        "sign-in": "/login?rid=READER_ID",
+        "sign-out": "/logout?rid=READER_ID"
+      },
+      "authorizationFallbackResponse": {
+        "error": true,
+        "loggedIn": false
+      }
+    }
+  </script>
 
   <style amp-custom>
     /*** uncss> filename: https://code.getmdl.io/1.3.0/material.indigo-pink.min.css ***/
@@ -159,6 +176,19 @@
     margin: 0 1rem;
     cursor: pointer;
     }
+    .deals-container {
+      display: flex
+    }
+    .deal-name {
+      text-align: center;
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
+    }
+    a[href] {
+      text-decoration: none;
+    }
+    .location {
+      padding: 16px 0 0 16px;
+    }
   </style>
 </head>
 
@@ -222,6 +252,26 @@
   </header>
 
   <div id="container">
+    <!-- Loggied in amp-access -->
+    <section amp-access="loggedIn">
+      <template amp-access-template type="amp-mustache">
+        <p> Hello {{name}}! Check out these deals we found for you! </p>
+        <div class="deals-container">
+          {{#deals}}
+          <a href="{{link}}">
+            <amp-img src="{{img}}" width=100 height=100></amp-img>
+            <p class="deal-name mdl-color-text--black">{{name}}</p>
+          </a>
+          {{/deals}}
+        </div>
+      </template>
+      <a class="mdl-button mdl-js-button mdl-js-ripple-effect" href="/logout">Logout</a>
+    </section>
+    <section amp-access="NOT loggedIn" amp-access-hide>
+      <span> Log-in or sign up to see deals </span>
+      <button class="mdl-button mdl-js-button mdl-js-ripple-effect" on="tap:amp-access.login-sign-in">Login</a>
+    </section>
+
     <h5 class="title">MEN'S COTTON CREW NECK
       <br>LONG SLEEVE T-SHIRT</h5>
     <h6 class="rating">
@@ -261,7 +311,7 @@
       <div on="tap:favorite-failed-message.hide" tabindex="0" role="button">CLOSE
       </div>
     </div>
-    
+
     <form method="post" action-xhr="/shirts/addToCart" target="_top">
       <div class="options colors">
         <h6>COLORS</h6>
@@ -311,6 +361,22 @@
         </h6>
       </div>
 
+      <amp-list src="/countries.json" width="auto" height="40" layout="fixed-height">
+      <template type="amp-mustache">
+        <label for="country">Choose country for shipping availability:</label>
+        <select name="country" id="country" on="change:AMP.setState({shippingSrc: '/shipping?location=' + event.value})">
+          {{#countries}}
+          <option value="{{name}}"> {{name}} </option>
+          {{/countries}}
+        </select>
+      </template>
+      </amp-list>
+      <amp-list src="/shipping" [src]="shippingSrc" single-item items="." height="25" layout="fixed-height">
+        <template type="amp-mustache">
+          <p> Shipping next day {{next-day-availability}} </p>
+        </template>
+      </amp-list>
+      
       <div class="options sizes">
         <h6>SIZE :</h6>
 
@@ -363,6 +429,12 @@
       </div>
     </form>
   </div>
+
+  <amp-list src="/location-specific-results.json" width="auto" height="32" single-item items=".">
+    <template type="amp-mustache">
+      <p class="location"> You are in {{location}}.</p>
+    </template>
+  </amp-list>
 </body>
 
 </html>
