@@ -393,7 +393,7 @@
     </script>
   </amp-state>
 
-  <!-- Animations -->
+  <!-- Animations for fixed ad -->
   <amp-animation id="shrinkAnim" layout="nodisplay">
     <script type="application/json">
          {
@@ -435,8 +435,49 @@
         </script>
   </amp-animation>
 
+  <!-- scroll to top button -->
+  <amp-animation id="showAnim" layout="nodisplay">
+    <script type="application/json">
+         {
+          "duration": "200ms",
+          "fill": "both",
+          "iterations": "1",
+          "direction": "alternate",
+          "animations": [
+           {
+            "selector": "#scrollToTopButton",
+            "keyframes": [{ "opacity": "1", "visibility": "visible" }]
+           }
+          ]
+         }
+        </script>
+  </amp-animation>
+  <amp-animation id="hideAnim" layout="nodisplay">
+    <script type="application/json">
+         {
+          "duration": "200ms",
+          "fill": "both",
+          "iterations": "1",
+          "direction": "alternate",
+          "animations": [
+           {
+            "selector": "#scrollToTopButton",
+            "keyframes": [{ "opacity": "0", "visibility": "hidden" }]
+           }
+          ]
+         }
+        </script>
+  </amp-animation>
+
+  <!-- Scroll to top button -->
+  <div id="marker">
+    <amp-position-observer on="enter:hideAnim.start; exit:showAnim.start" layout="nodisplay">
+    </amp-position-observer>
+  </div>
+
+  <!-- Header -->
   <header id="header">
-    <div class="hdr-advertisement hdr-menu">
+    <div class="hdr-advertisement hdr-menu" id="top-page">
       <a href=".">This is an advertisement</a>
     </div>
     <div id="header-title" class="mdl-color--black mdl-color-text--white hdr-menu">
@@ -637,6 +678,8 @@
       <p class="location"> You are in {{location}}.</p>
     </template>
   </amp-list>
+
+  <button id="scrollToTopButton" on="tap:top-page.scrollTo(duration=200)" class="scrollToTop mdl-color--black">⌃</button>
 </body>
 
 </html>
