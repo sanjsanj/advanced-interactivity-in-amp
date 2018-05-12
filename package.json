@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Codelab that explores the tools for building rich interactive content in AMP.",
   "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "keywords": [
     "AMP",
     "amp-bind",
